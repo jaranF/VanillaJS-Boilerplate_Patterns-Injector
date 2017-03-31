@@ -1,1 +1,2 @@
 # Lightweight Injection Provider Pattern
+Allows dependencies to be injected where one particular usecase might be the injecting of an already instantiated XHR object. The code that handles the XHR instantiation would also deal with cross-browser workarounds and so would come in as a dependency to the function that required it in a fully usable state independent of all the other code. Using dependencies in this way is useful for testing as they can be easily mocked.
