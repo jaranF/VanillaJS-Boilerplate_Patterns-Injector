@@ -1,5 +1,5 @@
 if (!Function.prototype.inject) {
-  Function.prototype.inject = function(bindToObj, argsToInjectOriginal) { /* console.log('this + args.length = %d', arguments.length); console.dir(this); */
+  Function.prototype.inject = function(bindToObj, argsToInjectOriginal) {
     var argsToInject = [], fnToInjectInto =  this, toString = Object.prototype.toString, slice = Array.prototype.slice;
     bindToObj = typeof bindToObj === "undefined" ? {} : bindToObj;
     if (typeof argsToInjectOriginal === "undefined") { 
