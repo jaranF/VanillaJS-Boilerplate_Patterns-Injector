@@ -11,10 +11,11 @@ if (!Function.prototype.inject) {
     } else {
       argsToInject[0] = argsToInjectOriginal;
     }
-
-    return function() {
-      //inline direct params are received as args also as per usual. i.e. the arguments object.
-      fnToInjectInto.apply(bindToObj, argsToInject.concat(slice.call(arguments, 0)));
-    }
+    return {
+      andExecuteWith: function() {
+        //inline direct params are received as args also as per usual. i.e. the arguments object.
+        return fnToInjectInto.apply(bindToObj, argsToInject.concat(slice.call(arguments, 0)));
+      }
+    };
   };
 }
