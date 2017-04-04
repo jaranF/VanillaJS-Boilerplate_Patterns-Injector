@@ -57,3 +57,7 @@ obj.myImplicitFn.inject(livesRemaining).andExecuteWith('bears', 'woods');
     > 'lives' = '9'    'arg2' = 'bears'
     > 'arg3' = woods
 ```
+
+# XMLHttpRequest Class Wrapper For Cross-Browser Compatibility
+## Usage
+**`xhr.ajax({ url:"http://localhost/1.php", success: function(s) { alert(s); }, type: "GET"});`**
