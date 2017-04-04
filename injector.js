@@ -13,7 +13,7 @@ if (!Function.prototype.inject) {
     }
     return {
       andExecuteWith: function() {
-        //inline direct params are received as args also as per usual. i.e. the arguments object.
+        //inline direct params are received as args as per usual. i.e. the arguments object.
         return fnToInjectInto.apply(bindToObj, argsToInject.concat(slice.call(arguments, 0)));
       }
     };
