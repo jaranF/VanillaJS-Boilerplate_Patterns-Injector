@@ -1,0 +1,30 @@
+{
+  "name": "boilerplat-patterns",
+  "version": "1.0.0",
+  "description": "General purpose boilerplate JavaScript code, helper workaround for cross-browser idiosyncracies and pollyfills",
+  "main": "injector.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://gituJaran@bkJaranFDiskStn.local:225/volume1/git_repos/projects/WebFrontEnd/VanillaJS/Boilerplate_Patterns"
+  },
+  "keywords": [
+    "tddjs.each",
+    "tddjs.isOwnProperty",
+    "XMLHttpRequest",
+    "xhr",
+    "injector",
+    "tddjs.extend"
+  ],
+  "author": "Jaran F",
+  "license": "MIT",
+  "devDependencies": {
+    "jasmine-ajax": "^3.3.1",
+    "jasmine-core": "^2.6.4",
+    "karma": "^1.7.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^1.1.0"
+  }
+}
