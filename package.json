@@ -1,0 +1,20 @@
+{
+  "name": "boilerplate-patterns",
+  "version": "1.0.0",
+  "description": "Boilerplate code that provides functionality for common JavaScript tasks (XMLHttpRequest, Injection etc); workarounds for cross-browser idiosyncracies and also polyfills",
+  "main": "injector.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://gituJaran@bkJaranFDiskStn.local:225/volume1/git_repos/projects/WebFrontEnd/VanillaJS/Boilerplate_Patterns"
+  },
+  "keywords": [
+    "JavaScript",
+    "Pollyfill",
+    "Boilerplate"
+  ],
+  "author": "JaranF",
+  "license": "MIT"
+}
