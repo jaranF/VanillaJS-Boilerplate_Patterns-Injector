@@ -56,5 +56,23 @@ describe("InjectorJs", function () {
     var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
     expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
   });
+  it("should make allow custom object to be supplied which injected stuff is bound to (rather than a new empty proxy object each time)", function () {
+    var person = {
+      description: "female"
+    }
+    returnThis.inject({bindToObject: person}, {lives: 1}).andExecuteWith();
+    expect(person.__lives).toBeDefined();
+    expect(person.__lives).toEqual(1);
+    expect(person.description).toEqual("female");
+  });
+  it("should make allow custom object AND binding suffix customisation to be supplied which injected stuff is bound to (i.e. this.«MY_SUFFIX»lives", function () {
+    var person = {
+      description: "female"
+    }
+    returnThis.inject({bindToObject: person, bindingSuffix: "$$"}, {lives: 1}).andExecuteWith();
+    expect(person.$$lives).toBeDefined();
+    expect(person.$$lives).toEqual(1);
+    expect(person.description).toEqual("female");
+  });
 });
  
