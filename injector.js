@@ -15,7 +15,7 @@ if (!Function.prototype.inject) {
     }
 
     if (toString.call(injectionDefinition) === "[object Object]" && injectionDefinition.bindToObject) {
-      objInjectedOnto = injectionDefinition.bindToObject;
+      objInjectedOnto = Object.create(injectionDefinition.bindToObject);
       errorIfOverwrite = !!injectionDefinition.errorIfOverwrite;
       bindingSuffix = injectionDefinition.bindingSuffix || bindingSuffix;
       arrArgsToInject = slice.call(arguments, 1);

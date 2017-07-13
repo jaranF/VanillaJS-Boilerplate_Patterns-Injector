@@ -59,19 +59,20 @@ describe("InjectorJs", function () {
   it("should make allow custom object to be supplied which injected stuff is bound to (rather than a new empty proxy object each time)", function () {
     var person = {
       description: "female"
-    }
-    returnThis.inject({bindToObject: person}, {lives: 1}).andExecuteWith();
-    expect(person.__lives).toBeDefined();
-    expect(person.__lives).toEqual(1);
+    };
+    var resultThis = returnThis.inject({bindToObject: person}, {lives: 1}).andExecuteWith();
+    expect(person.__lives).toBeUndefined();
+    expect(resultThis.__lives).toEqual(1);
     expect(person.description).toEqual("female");
   });
   it("should make allow custom object AND binding suffix customisation to be supplied which injected stuff is bound to (i.e. this.«MY_SUFFIX»lives", function () {
     var person = {
       description: "female"
     }
-    returnThis.inject({bindToObject: person, bindingSuffix: "$$"}, {lives: 1}).andExecuteWith();
-    expect(person.$$lives).toBeDefined();
-    expect(person.$$lives).toEqual(1);
+    var resultThis = returnThis.inject({bindToObject: person, bindingSuffix: "$$"}, {lives: 1}).andExecuteWith();
+    expect(person.$$lives).toBeUndefined();
+    expect(resultThis.$$lives).toBeDefined();
+    expect(resultThis.$$lives).toEqual(1);
     expect(person.description).toEqual("female");
   });
   it("should allow customisation of bind-object provided for injection and still work with multiple things being bound in", function () {
@@ -81,9 +82,6 @@ describe("InjectorJs", function () {
     var apiAfterInjection = stPetersReckoner.inject({bindToObject: cat}, {lives: 0, lifeLivedWell: true});
     var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
     expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
-    cat.__lives = 1; //The resurrection!
-    var resultAfterResurrection = apiAfterInjection.andExecuteWith("cat", " lives remaining (unknowable as this seems to be Schrodinger\'s cat)");
-    expect(resultAfterResurrection).toEqual("The cat has 1 lives remaining (unknowable as this seems to be Schrodinger\'s cat)");
   });
   it("should allow customisation of bind-object provided for injection and still work with multiple things being bound in (multipes via array)", function () {
     var cat = {
@@ -93,9 +91,18 @@ describe("InjectorJs", function () {
     expect(cat.description).toEqual("ginge");
     var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
     expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
-    cat.__lives = 1; //The resurrection!
-    var resultAfterResurrection = apiAfterInjection.andExecuteWith("cat", " lives remaining (unknowable as this seems to be Schrodinger\'s cat)");
-    expect(resultAfterResurrection).toEqual("The cat has 1 lives remaining (unknowable as this seems to be Schrodinger\'s cat)");
+  });
+  it("should NOT allow the injected thing to be altered after insertion", function () {
+    var cat = {
+      description: "tabby"
+    }
+    var apiAfterInjection = stPetersReckoner.inject({bindToObject: cat}, {lives: 0, lifeLivedWell: true});
+    var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
+    expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
+    cat.__lives = 5; //No, where it seems like this may be a resurrection it isn't. After the thing has been injected it cannot be altered
+    result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
+    expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
+    //Note how the above result is not "The cat has 5 lives remaining"
   });
 });
  
