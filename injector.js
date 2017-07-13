@@ -14,7 +14,7 @@ if (!Function.prototype.inject) {
       });
     }
 
-    if (toString.call(injectionDefinition) === "[object Object]" && injectDefinition.bindToObject) {
+    if (toString.call(injectionDefinition) === "[object Object]" && injectionDefinition.bindToObject) {
       objInjectedOnto = injectionDefinition.bindToObject;
       errorIfOverwrite = !!injectionDefinition.errorIfOverwrite;
       bindingSuffix = injectionDefinition.bindingSuffix || bindingSuffix;

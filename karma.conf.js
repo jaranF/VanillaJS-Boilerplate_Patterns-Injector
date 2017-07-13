@@ -18,7 +18,7 @@ module.exports = function(config) {
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
       '*.js',
       'spec/*-test.js',
-      'spec/*Spec.js'
+      'spec/injectorSpec.js'
     ],
 
 
