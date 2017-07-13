@@ -13,16 +13,16 @@ describe("Pollyfill...tddjs.isOwnProperty", function () {
       profession: "Programmer",
       location: "Norway"
     };
-    //person["hasOwnProperty"] = function() {
-    //  throw Error("We've shadowed the native \'hasOwnProperty\' method [usually available in the prototype chain] with our own code");
-    //};
+    person["hasOwnProperty"] = function() {
+      throw Error("We've shadowed the native \'hasOwnProperty\' method [usually available in the prototype chain] with our own code");
+    };
     var result = [];
     for (var prop in person) {
-      if (person.hasOwnProperty(prop)) {
+      if (tddjs.isOwnProperty(person, prop)) {
         result.push(prop);
       }
     }
-    var expected = ["location", "name", "profession"];
+    var expected = ["hasOwnProperty", "location", "name", "profession"];
     expect(result.sort()).toEqual(expected);
   });
 
