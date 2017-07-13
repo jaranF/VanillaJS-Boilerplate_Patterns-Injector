@@ -37,9 +37,31 @@ describe("Pollyfill...tddjs.each", function () {
     };
     var resultKeys = [];
     var resultValues = [];
-    var expectedValues = ["Christian", "Norway", "Programmer"];
     var expectedKeys = ["location", "name", "profession"];;
+    var expectedValues = ["Christian", "Norway", "Programmer"];
     tddjs.each(person, function(key, value) {
+      resultKeys.push(key);
+      resultValues.push(value);
+    });
+    expect(resultKeys.sort()).toEqual(expectedKeys);
+    expect(resultValues.sort()).toEqual(expectedValues);
+  });
+  it("should circumvent (<= IE8 AFAIK) IE's bug where dontEnum gets errantly taints identically named properties shadowing in-built inherited in-built properties", function () {
+    var object = {
+      // Properties with DontEnum on Object.prototype (if you have your own property with the same name on your own object IE errantly ignores it)
+      toString: "toString",
+      toLocaleString: "toLocaleString",
+      valueOf: "valueOf",
+      hasOwnProperty: "hasOwnProperty",
+      isPrototypeOf: "isPrototypeOf",
+      propertyIsEnumerable: "propertyIsEnumerable",
+      constructor: "constructor"
+    };
+    var resultKeys = [];
+    var resultValues = [];
+    var expectedKeys = ["constructor", "hasOwnProperty", "isPrototypeOf", "propertyIsEnumerable", "toLocaleString", "toString", "valueOf"];
+    var expectedValues = ["constructor", "hasOwnProperty", "isPrototypeOf", "propertyIsEnumerable", "toLocaleString", "toString", "valueOf"];
+    tddjs.each(object, function(key, value) {
       resultKeys.push(key);
       resultValues.push(value);
     });
