@@ -30,8 +30,21 @@ describe("Pollyfill...tddjs.isOwnProperty", function () {
 
 describe("Pollyfill...tddjs.each", function () {
   it("should only iterate over own properies when tested in a loop", function () {
-    var obj = "a_value";
-   // expect(obj).not.nottoEqual("a_value");
+    var person = {
+      name: "Christian",
+      profession: "Programmer",
+      location: "Norway"
+    };
+    var resultKeys = [];
+    var resultValues = [];
+    var expectedValues = ["Christian", "Norway", "Programmer"];
+    var expectedKeys = ["location", "name", "profession"];;
+    tddjs.each(person, function(key, value) {
+      resultKeys.push(key);
+      resultValues.push(value);
+    });
+    expect(resultKeys.sort()).toEqual(expectedKeys);
+    expect(resultValues.sort()).toEqual(expectedValues);
   });
 
 });
