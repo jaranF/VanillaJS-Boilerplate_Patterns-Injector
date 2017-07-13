@@ -1,64 +1,82 @@
-# Lightweight Injection Provider Pattern (Injector.js)
-Allows dependencies to be injected where one particular use case might be the injecting of an already instantiated XHR object. The code that handles the XHR instantiation would also deal with cross-browser workarounds and so would come in as a dependency to the function that required it independent of all the other code. I probably don't need to say this, but using dependencies in this way is helpful for testing as they can be easily mocked.
+# Lightweight Injection Provider Pattern (Injector.js)-
+Allows dependencies to be injected where one particular use case might be the injecting of an already instantiated XHR object. Why have I felt the need to create this injector? Well it's mainly to do with my time at the Lawn Tennis Association...namely:
+1. A previous JavaScript coder(s) had left behind some nastily coded solutions. One particular function (`LTA.AgeGroupCalculator`) has c. 250 lines of code; no fewer than five inner helper functions and all the jQuery event bindings / GUI updates in there as well. Bascially it is untestable. This despite the core concern &ndash;  date mathematics calculating a tennis player's age on the day the end of Summer / Winter season falls &ndash; being something naturally lends itself to unit testing.
+2. Edge cases and the desire to keep functions/methods small, clean and modular. In creating my CSVexporter code I was faced with the problem of having to use a cumbersome workaround (requiring AJAX) for just one browser (Safari with it's `window.URL.createObjectURL(blob)` ideosyncrasy. Sure I could use `$.http()` or `$http.get()` (jQuery and AngularJS respectively) by making that assumption I am forcing my assumption on other users. Not what what I want to do. Neither do I want to have to clutter up my 'CSVexporter' code with  XMLHTTPRequest boilerplate so injection seems ideal
+3. I am aiming for 'single responsibility' modularity as much as possible to ensure the testability of my code and injection really helps with that. In fact, if you get it right you can use injection to further a SOLID methodology (a lesson the Lawn Tennis Association solely needs to learn)
+
 ## Usage and Walkthrough
-[13-July-2017] Decided to fundamentally change this injector.js functionality; Instead have injected things pumped in ass addenda to the arguments object, I instead will have the injector things added on to a proxy object with is generated anew for method/method call that is injectorized (or extended onto a object provided by runtime as depenedent on usage).
-## :camel:
-~~Consider our function below that just console.log out's the arguments available to it:~~
+I've got a function called `stPetersReckoner` and I want to inject some stuff into it.
 ```javascript
-~~function resurrectCat(arg1, arg2, arg3, arg4) {~~
-~~    console.log("'this' binding");~~
-~~    console.dir(this);~~
-~~    console.log("\'this.abc\' = %s", this.abc);~~
-~~    console.log("'arg1' = '%s'    'arg2' = '%s'", arg1, arg2);~~
-~~    if (arguments.length > 2) { console.log(arg3); }~~
-~~    if (arguments.length > 3) { console.log(arg4); } ~~
+  function stPetersReckoner(animal, sLivesMsg) {
+    if («SOMEHOW_INJECTEDX» lives <= 0) {
+      if («SOMEHOW_INJECTEDX» lifeLivedWell) {
+        return "In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates"
+      }
+      return "You have expired you now are an \'ex-" + animal + "\'";
+    }
+    return "The " + animal + " has " + this.__lives + sLivesMsg;
+  } //end fn 'stPetersReckoner()'
+```
+* I want to be able to allow `stPetersReckoner()` to return a value (in this case a string) without injection interfering.
+* I want to NOT pollute the global window.
+* I do NOT want `stPetersReckoner()` to have extra arguments passed into it at runtime that aren't visible in the function definition (i.e. `animal` and `sLivesMsg` is what it is and what it should stay)
+* In use, I want the API to look like <code>«FUNCTION».<strong>inject(</strong>[{lives: 9}]<strong>)</strong>.<strong>andExecuteWith(</strong>"cat", " lives remaining"<strong>)</strong></code>
+
+With consideration to the above, I elected to put the things I inject onto the 'this' object which every function's execution context gets for free. The extra concern that raises is that you may be injecting something into an instance reference whereby  your function was used as a constructor and so already uses "`<strong>this</strong>`" in a meaningful way. To circumvent this I decided to allow he user to specify a custom prefix; i.e whatever is injected is prepended with the suffix as it is defined on the object that gets bound to "`<strong>this</strong>`". Secondly, if there is going to be a name clash then the injector can throw an error as otherwise you may waste a lot of time chasing hard to to find bugs.
+
+### Usage Example 1 (Simple Scenario: One thing being injected)
+```javascript
+function stPetersReckoner(animal, sLivesMsg) {
+  if (this.__lives <= 0) {
+    if (this.__lifeLivedWell) {
+      return "In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates"
+    }
+    return "You have expired you now are an \'ex-" + animal + "\'";
+  }
+  return "The " + animal + " has " + this.__lives + sLivesMsg;
 }
 ```
-~~1. Then to inject a value into our function~~
+**The call to make the injection happen:**
 ```javascript
-~~var livesRemaining = 9;~~
-~~function resurrectCat(lives, arg2, arg3, arg4) {~~
-~~    console.log("'this' binding");~~
-~~    console.dir(this);~~
-~~    console.log("\'this.abc\' = %s", this.abc);~~
-~~    console.log("'lives' = '%s'    'arg2' = '%s'",  lives, arg2);~~
-~~    if (arguments.length > 2) { console.log("'arg3' = %s", arg3); }~~
-~~    if (arguments.length > 3) { console.log("'arg4' = %s", arg4); }~~
+stPetersReckoner.inject([{lives: 9}]).andExecuteWith("cat", " lives remaining");
+```
+
+### Usage Example 2 (Multiple things being injected)
+```javascript
+stPetersReckoner.inject([{lives: 0}, {lifeLivedWell: true}]).andExecuteWith("cat", " lives remaining");
+```
+
+### Usage Example 3 (Multiple things being injected - alternative technique)
+```javascript
+stPetersReckoner.inject({lives: 0, lifeLivedWell: true}).andExecuteWith("cat", " lives remaining");
+```
+The above culminates in the exactly same result as Example 2
+
+### Usage Example 4 (Customising the suffix to avoid a name clash)
+```javascript
+var dog = {
+  description: "German Shepherd",
+  __lives: "In Kennel",
+  __awards: "Best In Show"
 }
+var stPeterSays = stPetersReckoner.inject({bindToObject: dog, bindingSuffix: "$$"}, {lives: 1}).andExecuteWith("dog", " lives remaining");
+console.log(stPeterSays === "The dog has 1 lives remaining"); //Expect true
+console.log(dog.__lives === "In Kennel"); //Expect true...proving no name clash
+console.log(dog.__awards === "Best In Show"); //Expect true
 ```
-~~**`resurrectCat.inject(livesRemaining).andExecuteWith('bears', 'woods');`**~~
-~~### Expect~~
-```
-~~    > 'this' binding (see below) ~~
-~~    > Object ~~
-~~    > 'this.abc' = undefined ~~
-~~    > 'lives' = '9'    'arg2' = 'bears' ~~
-~~    > 'arg3' = 'woods' ~~
-```
-~~ 2. To inject a value into a method but loose the implicit bind that gave it a meaningful 'this' context ~~
+
+### Usage Example 4 (Deliberately generating an error when there is a clash)
 ```javascript
-~~ obj = { abc: "alphabet", myImplicitFn: resurrectCat }; ~~
-~~ obj.myImplicitFn.inject(livesRemaining).andExecuteWith('bears', 'woods'); ~~
+var dog = {
+  description: "German Shepherd",
+  __lives: "In Kennel",
+  __awards: "Best In Show"
+}
+var stPeterSays = stPetersReckoner.inject({bindToObject: dog, errorIfOverwrite: true}, {lives: 1}).andExecuteWith("dog", " lives remaining");
 ```
-~~ **`obj.myImplicitFn.inject(livesRemaining).andExecuteWith('bears', 'woods');`** ~~
-~~ ### Expect ~~
-```
-~~    > 'this' binding (see below) ~~
-~~    > Object ~~
-~~    > 'this.abc' = undefined ~~
-~~    > 'lives' = '9'    'arg2' = 'bears' ~~
-~~    > 'arg3' = woods ~~
-```
-3. To inject a value into a method but this time honouring the implicit bind to 'obj' as 'this'
-**`obj.myImplicitFn.inject(obj, livesRemaining).andExecuteWith('bears', 'woods');`**
-### Expect
-```
-~~    > 'this' binding (see below) ~~
-~~    > Object ~~
-~~    > 'this.abc' = alphabet ~~
-~~    > 'lives' = '9'    'arg2' = 'bears' ~~
-~~    > 'arg3' = woods ~~
-```
+
+### TODO
+Although the ability to customise a suffix goes someway to making the injection unobtrusive it would be better if the binds only stay 'alive' for the duration of the execution of function they are tied to. It would be better still if they were perhaps non-enumerable from the function i.e. <code><strong>Object.create()</strong></code> could help here.
 
 # XMLHttpRequest Class Wrapper For Cross-Browser Compatibility
 ## Usage
