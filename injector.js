@@ -24,7 +24,6 @@ if (!Function.prototype.inject) {
       objInjectedOnto = {};
       arrArgsToInject = slice.call(arguments, 0);
     }
-    debugger;
     iterateBindItems(arrArgsToInject, objInjectedOnto);
     return {
       andExecuteWith: function() {
