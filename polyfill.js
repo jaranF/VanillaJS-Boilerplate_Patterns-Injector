@@ -21,27 +21,19 @@ tddjs.isOwnProperty = (function () {
 tddjs.each = (function () {
   // Returns an array of properties that are not exposed
   // in a for-in loop on the provided object
+  var propertyIsEnum = Object.prototype.propertyIsEnumerable;
+
   function unEnumerated(object, properties) {
     var length = properties.length;
-    for (var i = 0; i < length; i++) {
-      object[properties[i]] = true;
-    }
-    var enumerated = length;
-    for (var prop in object) {
-      if (tddjs.isOwnProperty(object, prop)) {
-        enumerated -= 1;
-        object[prop] = false;
-      }
-    }
-    if (!enumerated) {
-      return;
-    }
     var needsFix = [];
-    for (i = 0; i < length; i++) {
-      if (object[properties[i]]) {
+    for (var i = 0; i < length; i++) {
+      object[properties[i]] = null; // First set a 'shadowing' property on the object (any value will suffice); whose
+                                    // name we know shadows an in-built method name (i.e. 'toString()' etc) on the native
+                                    // Object.prototype
+      if ( !(propertyIsEnum.call(object, properties[i]))  ) { //We have found a dontEnum bug triggering property
         needsFix.push(properties[i]);
-      }
-    }
+      } //end if
+    } //end for..in
     return needsFix;
   }
   var oFixes = unEnumerated({},
@@ -63,7 +55,8 @@ tddjs.each = (function () {
     for (var prop in object) {
       if (tddjs.isOwnProperty(object, prop)) {
         callback(prop, object[prop]);
-      } }
+      }
+    }
     // Loop additional properties in non-conforming browsers
     var fixes = needsFix[typeof object];
     if (fixes) {
