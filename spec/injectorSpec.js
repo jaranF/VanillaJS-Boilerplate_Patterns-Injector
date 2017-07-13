@@ -9,6 +9,9 @@ describe("InjectorJs", function () {
 
   function stPetersReckoner(animal, sLivesMsg) {
     if (this.__lives <= 0) {
+      if (this.__lifeLivedWell) {
+        return "In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates"
+      }
       return "You have expired you now are an \'ex-" + animal + "\'";
     }
     return "The " + animal + " has " + this.__lives + sLivesMsg;
@@ -42,6 +45,16 @@ describe("InjectorJs", function () {
     var apiAfterInjection = stPetersReckoner.inject({lives: 9});
     var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
     expect(result).toEqual("The cat has 9 lives remaining");
+  });
+  it("should allow multiple things to be injected (format of injection = one single object, multiple properties)", function () {
+    var apiAfterInjection = stPetersReckoner.inject({lives: 0, lifeLivedWell: true});
+    var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
+    expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
+  });
+  it("should allow multiple things to be injected (format of injection MANY objects in an array)", function () {
+    var apiAfterInjection = stPetersReckoner.inject([{lives: 0}, {lifeLivedWell: true}]);
+    var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
+    expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
   });
 });
  
