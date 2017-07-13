@@ -25,6 +25,7 @@ I've got a function called `stPetersReckoner` and I want to inject some stuff in
 With consideration to the above, I elected to put the things I inject onto the 'this' object which every function's execution context gets for free. The extra concern that raises is that you may be injecting something into an instance reference whereby  your function was used as a constructor and so already uses "`<strong>this</strong>`" in a meaningful way. To circumvent this I decided to allow he user to specify a custom prefix; i.e whatever is injected is prepended with the suffix as it is defined on the object that gets bound to "`<strong>this</strong>`". Secondly, if there is going to be a name clash then the injector can throw an error as otherwise you may waste a lot of time chasing hard to to find bugs.
 
 ### Usage Example 1 (Simple Scenario: One thing being injected)
+Try it on [jsFiddle](https://jsfiddle.net/jaranF/vt58y0b9/1/)
 ```javascript
 function stPetersReckoner(animal, sLivesMsg) {
   if (this.__lives <= 0) {
