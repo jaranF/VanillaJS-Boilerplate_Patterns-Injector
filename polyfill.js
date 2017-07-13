@@ -3,7 +3,7 @@
 
 /**
  * @author Christian Johansen
- * @description Taken from his book "Test Driven JavaScript Development" and some functionality refactored by me, JaranF
+ * @description Taken from his book "Test Driven JavaScript Development".
  */
 var tddjs = window.tddjs || {};
 
@@ -18,6 +18,10 @@ tddjs.isOwnProperty = (function () {
     // inaccurate results
   } }());
 
+/**
+ * @author Christian Johansen
+ * @description Taken from his book "Test Driven JavaScript Development" and some functionality refactored by me, JaranF
+ */
 tddjs.each = (function () {
   // Returns an array of properties that are not exposed
   // in a for-in loop on the provided object
@@ -67,4 +71,16 @@ tddjs.each = (function () {
           callback(property, object[property]);
         } }
     } };
+}());
+
+/**
+ * @author Christian Johansen
+ * @description Taken from his book "Test Driven JavaScript Development".
+ */
+tddjs.extend = (function () {
+  function extend(target, source) {
+    tddjs.each(source, function (prop, val) {
+      target[prop] = val;
+    }); }
+  return extend;
 }());
