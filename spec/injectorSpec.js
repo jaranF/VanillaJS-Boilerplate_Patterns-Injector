@@ -74,5 +74,28 @@ describe("InjectorJs", function () {
     expect(person.$$lives).toEqual(1);
     expect(person.description).toEqual("female");
   });
+  it("should allow customisation of bind-object provided for injection and still work with multiple things being bound in", function () {
+    var cat = {
+      description: "tabby"
+    }
+    var apiAfterInjection = stPetersReckoner.inject({bindToObject: cat}, {lives: 0, lifeLivedWell: true});
+    var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
+    expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
+    cat.__lives = 1; //The resurrection!
+    var resultAfterResurrection = apiAfterInjection.andExecuteWith("cat", " lives remaining (unknowable as this seems to be Schrodinger\'s cat)");
+    expect(resultAfterResurrection).toEqual("The cat has 1 lives remaining (unknowable as this seems to be Schrodinger\'s cat)");
+  });
+  it("should allow customisation of bind-object provided for injection and still work with multiple things being bound in (multipes via array)", function () {
+    var cat = {
+      description: "ginge"
+    }
+    var apiAfterInjection = stPetersReckoner.inject({bindToObject: cat}, [{lives: 0}, {lifeLivedWell: true}]);
+    expect(cat.description).toEqual("ginge");
+    var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
+    expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
+    cat.__lives = 1; //The resurrection!
+    var resultAfterResurrection = apiAfterInjection.andExecuteWith("cat", " lives remaining (unknowable as this seems to be Schrodinger\'s cat)");
+    expect(resultAfterResurrection).toEqual("The cat has 1 lives remaining (unknowable as this seems to be Schrodinger\'s cat)");
+  });
 });
  
