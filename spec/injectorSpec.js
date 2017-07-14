@@ -1,4 +1,4 @@
-/*global angular: false, jstestdriver: false, beforeEach: false, afterEach: false, inject: false, spyOn: false, describe: false, beforeEach: false, inject: false, it: false, expect: false, module: false, : false */
+/*global angular: false, jstestdriver: false, beforeEach: false, afterEach: false, inject: false, spyOn: false, describe: false, beforeEach: false, inject: false, it: false, expect: false, module: false, result: false,  __xhr: false, __lifeLivedWell: false, __lives: false, __demonstrateSpecialSkill: false, $$lives: false */
 /*jslint newcap: true, white: true, sloppy: true, vars: true, unparam: true */
 
 /**
@@ -16,6 +16,29 @@ describe("InjectorJs", function () {
     }
     return "The " + animal + " has " + this.__lives + sLivesMsg;
   } //end fn 'stPetersReckoner()'
+
+  function Person(name, gender) {
+    this.name =  name;
+    this.gender = gender;
+  }
+  (function(_p) {
+    _p.getName = function() {
+      return this.name;
+    };
+    _p.getGender = function() {
+      return this.gender;
+    };
+    _p.setSpecialSkill = function(skill) {
+      this.specialSkill = skill;
+    };
+    _p.brag = function() {
+      var sMsg = "The thing I am best at is " +  this.specialSkill;
+      if (this.__demonstrateSpecialSkill) {
+        return this.__demonstrateSpecialSkill();
+      }
+      return sMsg;
+    };
+  })(Person.prototype);
 
   function returnThis() {
     return this;
@@ -68,7 +91,7 @@ describe("InjectorJs", function () {
   it("should make allow custom object AND binding suffix customisation to be supplied which injected stuff is bound to (i.e. this.«MY_SUFFIX»lives", function () {
     var person = {
       description: "female"
-    }
+    };
     var resultThis = returnThis.inject({bindToObject: person, bindingSuffix: "$$"}, {lives: 1}).andExecuteWith();
     expect(person.$$lives).toBeUndefined();
     expect(resultThis.$$lives).toBeDefined();
@@ -78,7 +101,7 @@ describe("InjectorJs", function () {
   it("should allow customisation of bind-object provided for injection and still work with multiple things being bound in", function () {
     var cat = {
       description: "tabby"
-    }
+    };
     var apiAfterInjection = stPetersReckoner.inject({bindToObject: cat}, {lives: 0, lifeLivedWell: true});
     var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
     expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
@@ -86,7 +109,7 @@ describe("InjectorJs", function () {
   it("should allow customisation of bind-object provided for injection and still work with multiple things being bound in (multipes via array)", function () {
     var cat = {
       description: "ginge"
-    }
+    };
     var apiAfterInjection = stPetersReckoner.inject({bindToObject: cat}, [{lives: 0}, {lifeLivedWell: true}]);
     expect(cat.description).toEqual("ginge");
     var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
@@ -95,7 +118,7 @@ describe("InjectorJs", function () {
   it("should NOT allow the injected thing to be altered after insertion", function () {
     var cat = {
       description: "tabby"
-    }
+    };
     var apiAfterInjection = stPetersReckoner.inject({bindToObject: cat}, {lives: 0, lifeLivedWell: true});
     var result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
     expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
@@ -103,6 +126,73 @@ describe("InjectorJs", function () {
     result = apiAfterInjection.andExecuteWith("cat", " lives remaining");
     expect(result).toEqual("In passing from life to the Afterlife, Saint Peter welcomes you through these pearly gates");
     //Note how the above result is not "The cat has 5 lives remaining"
+  });
+  it("should be unobtrusive in making the bind object the injected stuff goes in on un-enumerable", function () {
+    var person = new Person("Rachel", "female");
+
+    var arrAllEnumerables = [];
+    var arrEnumerableAsHasOwns = [];
+    for (var iO in person) {
+      if (person.hasOwnProperty(iO)) {
+        arrEnumerableAsHasOwns.push(iO);
+      } else {
+        arrAllEnumerables.push(iO);
+      }
+    } //next iO
+    arrAllEnumerables = arrAllEnumerables.concat(arrEnumerableAsHasOwns);
+    var expected = ['gender', 'name'];
+    expect(arrEnumerableAsHasOwns.sort()).toEqual(expected);
+    expected = ['brag', 'gender', 'getGender', 'getName', 'name', 'setSpecialSkill'];
+    expect(arrAllEnumerables.sort()).toEqual(expected);
+    expect(person.getName()).toEqual("Rachel");
+    expect(person.getGender()).toEqual("female");
+    person.setSpecialSkill("languages");
+    arrAllEnumerables = [];
+    arrEnumerableAsHasOwns = [];
+    for (iO in person) {
+      if (person.hasOwnProperty(iO)) {
+        arrEnumerableAsHasOwns.push(iO);
+      } else {
+        arrAllEnumerables.push(iO);
+      }
+    } //next iO
+    arrAllEnumerables = arrAllEnumerables.concat(arrEnumerableAsHasOwns);
+    expected = ['gender', 'name', 'specialSkill'];
+    expect(arrEnumerableAsHasOwns.sort()).toEqual(expected);
+    expected = ['brag', 'gender', 'getGender', 'getName', 'name', 'setSpecialSkill', 'specialSkill'];
+    expect(arrAllEnumerables.sort()).toEqual(expected);
+
+    var result = person.brag.inject({bindToObject: person},
+        {demonstrateSpecialSkill: function() {
+          return "Sprachenzie Deutsch"
+        }}).andExecuteWith();
+    arrAllEnumerables = [];
+    arrEnumerableAsHasOwns = [];
+    for (iO in person) {
+      if (person.hasOwnProperty(iO)) {
+        arrEnumerableAsHasOwns.push(iO);
+      } else {
+        arrAllEnumerables.push(iO);
+      }
+    } //next iO
+    arrAllEnumerables = arrAllEnumerables.concat(arrEnumerableAsHasOwns);
+    expected = ['gender', 'name', 'specialSkill'];
+    expect(arrEnumerableAsHasOwns.sort()).toEqual(expected);
+    expected = ['brag', 'gender', 'getGender', 'getName', 'name', 'setSpecialSkill', 'specialSkill'];
+    expect(arrAllEnumerables.sort()).toEqual(expected);
+    expect(person.getName()).toEqual("Rachel");
+    expect(person.getGender()).toEqual("female");
+    expect(result).toEqual("Sprachenzie Deutsch");
+  });
+  it("should NOT allow the injected thing to be altered after insertion", function () {
+    var cat = {
+      description: "tabby"
+    };
+
+    expect(function() {     var apiAfterInjection = stPetersReckoner.inject({
+      bindToObject: cat,
+      bindingSuffix: "",
+      errorIfOverwrite:true}, {description: null}); }).toThrow();
   });
 });
  

@@ -9,7 +9,12 @@ if (!Function.prototype.inject) {
         if (toString.call(itemValue) === "[object Array]" || toString.call(itemValue) === "[object Object]") {
           iterateBindItems(itemValue, objAttachTo);
         } else {
-          objAttachTo[bindingSuffix + itemKeyName] = itemValue;
+          var sInjectedItemName = bindingSuffix + itemKeyName;
+          if (errorIfOverwrite && typeof objAttachTo[sInjectedItemName] !== "undefined") { //tddjs.isOwnProperty(objAttachTo, bindingSuffix + itemKeyName)
+            throw new Error("Injected item would overwrite an existing property");
+          } else {
+            objAttachTo[sInjectedItemName] = itemValue;
+          }
         }
       });
     }
@@ -17,7 +22,7 @@ if (!Function.prototype.inject) {
     if (toString.call(injectionDefinition) === "[object Object]" && injectionDefinition.bindToObject) {
       objInjectedOnto = Object.create(injectionDefinition.bindToObject);
       errorIfOverwrite = !!injectionDefinition.errorIfOverwrite;
-      bindingSuffix = injectionDefinition.bindingSuffix || bindingSuffix;
+      bindingSuffix = typeof injectionDefinition.bindingSuffix !== "undefined" ? injectionDefinition.bindingSuffix : bindingSuffix;
       arrArgsToInject = slice.call(arguments, 1);
     }
     else {
