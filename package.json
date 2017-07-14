@@ -1,6 +1,6 @@
 {
   "name": "boilerplate-patterns",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Boilerplate code that provides functionality for common JavaScript tasks (XMLHttpRequest, Injection etc); workarounds for cross-browser idiosyncracies and also polyfills",
   "main": "injector.js",
   "scripts": {

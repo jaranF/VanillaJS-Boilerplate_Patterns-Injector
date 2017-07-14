@@ -4,6 +4,12 @@ Allows dependencies to be injected where one particular use case might be the in
 2. Edge cases and the desire to keep functions/methods small, clean and modular. In creating my CSVexporter code I was faced with the problem of having to use a cumbersome workaround (requiring AJAX) for just one browser (Safari with it's `window.URL.createObjectURL(blob)` ideosyncrasy. Sure I could use `$.http()` or `$http.get()` (jQuery and AngularJS respectively) by making that assumption I am forcing my assumption on other users. Not what what I want to do. Neither do I want to have to clutter up my 'CSVexporter' code with  XMLHTTPRequest boilerplate so injection seems ideal
 3. I am aiming for 'single responsibility' modularity as much as possible to ensure the testability of my code and injection really helps with that. In fact, if you get it right you can use injection to further a SOLID methodology (a lesson the Lawn Tennis Association solely needs to learn)
 
+## Versions
+Version | Description
+------- | -------------
+1.0.0   | Fully working and tested apart from one feature 'errorIfOverwrite' unimplemented and one TODO improvement.
+1.0.1   | 'errorIfOverwrite' and tests demonstrating unobtrusiveness.(was a TODO [see above] but no extra code was reqd.
+
 ## Usage and Walkthrough
 I've got a function called `stPetersReckoner` and I want to inject some stuff into it.
 ```javascript
