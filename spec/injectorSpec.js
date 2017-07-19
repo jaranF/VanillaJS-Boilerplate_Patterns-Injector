@@ -146,6 +146,7 @@ describe("InjectorJs", function () {
     expect(arrAllEnumerables.sort()).toEqual(expected);
     expect(person.getName()).toEqual("Rachel");
     expect(person.getGender()).toEqual("female");
+
     person.setSpecialSkill("languages");
     arrAllEnumerables = [];
     arrEnumerableAsHasOwns = [];
@@ -184,7 +185,7 @@ describe("InjectorJs", function () {
     expect(person.getGender()).toEqual("female");
     expect(result).toEqual("Sprachenzie Deutsch");
   });
-  it("should NOT allow the injected thing to be altered after insertion", function () {
+  it("should NOT allow the thing injected to overwrite an already existing property on the \'this\' object that the method is associated with.", function () {
     var cat = {
       description: "tabby"
     };
@@ -193,6 +194,27 @@ describe("InjectorJs", function () {
       bindToObject: cat,
       bindingSuffix: "",
       errorIfOverwrite:true}, {description: null}); }).toThrow();
+  });
+  it("should allow for injected objects nested within objects and retain the nestedness", function () {
+    var mock = {
+                ENVINFO:  {
+                            browser:  {
+                                       isIE: false,
+                                       isSafari: false,
+                                        version: 52
+                                      }
+                          }
+    };
+    var environment = { "OS": "Windows 10"  };
+
+    var apiAfterInjection = returnThis.inject({
+      bindToObject: environment,
+      bindingSuffix: "__"}, mock);
+    var result = apiAfterInjection.andExecuteWith();
+    expect(result["OS"]).toEqual("Windows 10");
+    expect(result["__ENVINFO"]).toBeDefined();
+    expect(result["__ENVINFO"]).toEqual(mock.ENVINFO);
+    expect(result["__ENVINFO"]["browser"]["version"]).toEqual(52);
   });
 });
  

@@ -6,7 +6,7 @@ if (!Function.prototype.inject) {
 
     function iterateBindItems(colThingsToInject, objAttachTo) {
       tddjs.each(colThingsToInject, function(itemKeyName, itemValue) {
-        if (toString.call(itemValue) === "[object Array]" || toString.call(itemValue) === "[object Object]") {
+        if (toString.call(colThingsToInject) === "[object Array]") {
           iterateBindItems(itemValue, objAttachTo);
         } else {
           var sInjectedItemName = bindingSuffix + itemKeyName;
